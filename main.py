@@ -1,11 +1,12 @@
 import json
+import os
 from typing import Union
-
 from fastapi import FastAPI
 
 app = FastAPI()
 
 
+# DEFAULT
 @app.get("/")
 def read_root():
     return {"APM": "API"}
@@ -42,9 +43,24 @@ def get_user_favorites(user_id: str):
         return {}
 
 
+# CREATE NEW USER DATA FILE
+# RETURNS: NEW USER DATA IF OK
+@app.put("/new_user/{user_id}/{user_name}")
+def create_user_data(user_id: str, user_name: str):
+    try:
+        new_file_path = os.path.join("data/users/", f"{user_id}.json")
+        new_data = {
+            "id": user_id,
+            "name": user_name,
+            "favorites": []
+        }
 
+        if not os.path.exists(new_file_path):
+            with open(new_file_path, "w") as file:
+                json.dump(new_data, file)
+            return new_data
+        else:
+            return {}
 
-
-@app.get("/items/{item_id}")
-def read_item(item_id: int, q: Union[str, None] = None):
-    return {"item_id": item_id, "q": q}
+    except Exception:
+        return {}
