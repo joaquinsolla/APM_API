@@ -1,6 +1,5 @@
 import json
 import os
-from typing import Union
 from fastapi import FastAPI
 
 app = FastAPI()
@@ -14,7 +13,7 @@ def read_root():
 
 # GET ALL PARKING SLOTS
 # RETURNS: { "plazas:" List [ slots {} ] }
-@app.get("/plazas")
+@app.get("/get/plazas")
 def get_all_slots():
     try:
         with open("data/parking_formatted.json", "r", encoding="utf-8") as file:
@@ -26,7 +25,7 @@ def get_all_slots():
 
 # GET ALL FAVORITE PARKING SLOTS OF USER ID
 # RETURNS: List [ slots {} ]
-@app.get("/plazas/{user_id}")
+@app.get("/get/plazas/{user_id}")
 def get_user_favorites(user_id: str):
     try:
         with open(f"data/users/{user_id}.json", "r", encoding="utf-8") as file:
@@ -45,7 +44,7 @@ def get_user_favorites(user_id: str):
 
 # CREATE NEW USER DATA FILE
 # RETURNS: NEW USER DATA IF OK
-@app.put("/new_user/{user_id}/{user_name}")
+@app.put("/put/new_user/{user_id}/{user_name}")
 def create_user_data(user_id: str, user_name: str):
     try:
         new_file_path = os.path.join("data/users/", f"{user_id}.json")
@@ -59,6 +58,54 @@ def create_user_data(user_id: str, user_name: str):
             with open(new_file_path, "w") as file:
                 json.dump(new_data, file)
             return new_data
+        else:
+            return {}
+
+    except Exception:
+        return {}
+
+
+# ADD SLOT TO USER FAVORITES
+# RETURNS: NEW USER DATA
+@app.put("/put/user/{user_id}/add_favorite/{slot_id}")
+def create_user_data(user_id: str, slot_id: int):
+    try:
+
+        with open(f"data/users/{user_id}.json", "r", encoding="utf-8") as file:
+            user_data = json.load(file)
+
+        if slot_id not in user_data["favorites"]:
+            user_data["favorites"].append(slot_id)
+
+            with open(f"data/users/{user_id}.json", "w", encoding="utf-8") as file:
+                json.dump(user_data, file)
+
+            return user_data
+
+        else:
+            return {}
+
+    except Exception:
+        return {}
+
+
+# REMOVE SLOT FROM USER FAVORITES
+# RETURNS: NEW USER DATA
+@app.put("/put/user/{user_id}/remove_favorite/{slot_id}")
+def create_user_data(user_id: str, slot_id: int):
+    try:
+
+        with open(f"data/users/{user_id}.json", "r", encoding="utf-8") as file:
+            user_data = json.load(file)
+
+        if slot_id in user_data["favorites"]:
+            user_data["favorites"].remove(slot_id)
+
+            with open(f"data/users/{user_id}.json", "w", encoding="utf-8") as file:
+                json.dump(user_data, file)
+
+            return user_data
+
         else:
             return {}
 
