@@ -68,7 +68,7 @@ def create_user_data(user_id: str, user_name: str):
 # ADD SLOT TO USER FAVORITES
 # RETURNS: NEW USER DATA
 @app.put("/put/user/{user_id}/add_favorite/{slot_id}")
-def create_user_data(user_id: str, slot_id: int):
+def add_user_favorite(user_id: str, slot_id: int):
     try:
 
         with open(f"data/users/{user_id}.json", "r", encoding="utf-8") as file:
@@ -92,7 +92,7 @@ def create_user_data(user_id: str, slot_id: int):
 # REMOVE SLOT FROM USER FAVORITES
 # RETURNS: NEW USER DATA
 @app.put("/put/user/{user_id}/remove_favorite/{slot_id}")
-def create_user_data(user_id: str, slot_id: int):
+def remove_user_favorite(user_id: str, slot_id: int):
     try:
 
         with open(f"data/users/{user_id}.json", "r", encoding="utf-8") as file:
@@ -108,6 +108,26 @@ def create_user_data(user_id: str, slot_id: int):
 
         else:
             return {}
+
+    except Exception:
+        return {}
+
+
+# EDIT USER ACCOUNT INFO
+# RETURNS: NEW USER DATA
+@app.put("/put/user/{user_id}/edit_info/{new_name}")
+def edit_user_info(user_id: str, new_name: str):
+    try:
+
+        with open(f"data/users/{user_id}.json", "r", encoding="utf-8") as file:
+            user_data = json.load(file)
+
+        user_data["name"] = new_name
+
+        with open(f"data/users/{user_id}.json", "w", encoding="utf-8") as file:
+            json.dump(user_data, file)
+
+        return user_data
 
     except Exception:
         return {}
