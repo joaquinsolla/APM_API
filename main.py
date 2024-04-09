@@ -37,7 +37,7 @@ def get_user_favorites(user_id: str):
         fav_ids = user_data["favorites"]
         fav_slots = [plaza for plaza in slots_data["plazas"] if plaza["id"] in fav_ids]
 
-        return fav_slots
+        return {"plazas": fav_slots}
     except Exception:
         return {}
 
