@@ -83,7 +83,7 @@ def add_user_favorite(user_id: str, slot_id: int):
             return user_data
 
         else:
-            return {}
+            return {"id": "", "name": "", "favorites": []}
 
     except Exception:
         return {}
@@ -107,7 +107,7 @@ def remove_user_favorite(user_id: str, slot_id: int):
             return user_data
 
         else:
-            return {}
+            return {"id": "", "name": "", "favorites": []}
 
     except Exception:
         return {}
