@@ -1,5 +1,6 @@
 {
   "id": "testuser3",
   "name": "User 3",
-  "favorites": []
+  "favorites": [],
+  "password": "testuser3"
 }

@@ -1,6 +1,7 @@
 import json
 import os
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
+from pydantic import BaseModel
 
 app = FastAPI()
 
@@ -131,3 +132,30 @@ def edit_user_info(user_id: str, new_name: str):
 
     except Exception:
         return {}
+
+
+class LoginRequest(BaseModel):
+    login: str
+    password: str
+
+
+@app.post("/post/login")
+def login(login_request: LoginRequest):
+    login = login_request.login
+    password = login_request.password
+
+    print("LOGIN")
+    print(f"Recibido login: {login}, password: {password}")
+
+    try:
+        with open(f"data/users/{login}.json", "r", encoding="utf-8") as file:
+            user_data = json.load(file)
+
+            # Verificar si la contraseña coincide
+            if user_data.get("password") == password:
+                return {"message": "Login exitoso"}
+            else:
+                raise HTTPException(status_code=401, detail="Credenciales incorrectas")
+
+    except FileNotFoundError:
+        raise HTTPException(status_code=404, detail="Usuario no encontrado")

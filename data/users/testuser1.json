@@ -1,1 +1,1 @@
-{"id": "testuser1", "name": "User 1", "favorites": [1, 2, 3, 4, 5]}
+{"id": "testuser1", "name": "User 1", "favorites": [1, 2, 3, 4, 5], "password":  "testuser1"}
