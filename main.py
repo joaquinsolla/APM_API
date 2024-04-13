@@ -42,27 +42,15 @@ def get_user_favorites(user_id: str):
     except Exception:
         return {}
 
-
-# CREATE NEW USER DATA FILE
-# RETURNS: NEW USER DATA IF OK
-@app.put("/put/new_user/{user_id}/{user_email}/{password}")
-def create_user_data(user_id: str, user_email: str, password: str):
+# GET USER DATA
+@app.get("/get/{user_id}")
+def get_user_data(user_id: str):
     try:
-        new_file_path = os.path.join("data/users/", f"{user_id}.json")
-        new_data = {
-            "id": user_id,
-            "email": user_email,
-            "favorites": [],
-            "password": password
-        }
+        with open(f"data/users/{user_id}.json", "r", encoding="utf-8") as file:
+            user_data = json.load(file)
+            print(user_data)
 
-        if not os.path.exists(new_file_path):
-            with open(new_file_path, "w") as file:
-                json.dump(new_data, file)
-            return new_data
-        else:
-            return {}
-
+        return user_data
     except Exception:
         return {}
 
@@ -145,9 +133,6 @@ def login(login_request: LoginRequest):
     username = login_request.username
     password = login_request.password
 
-    print("LOGIN")
-    print(f"Recibido username: {username}, password: {password}")
-
     try:
         with open(f"data/users/{username}.json", "r", encoding="utf-8") as file:
             user_data = json.load(file)
@@ -160,3 +145,48 @@ def login(login_request: LoginRequest):
 
     except FileNotFoundError:
         raise HTTPException(status_code=404, detail="Usuario no encontrado")
+    
+
+class RegisterRequest(BaseModel):
+    username: str
+    email: str
+    password: str
+# CREATE NEW USER DATA FILE
+# RETURNS: NEW USER DATA IF OK
+@app.post("/post/register")
+def register(register_request: RegisterRequest):
+    username = register_request.username
+    user_email = register_request.email
+    password = register_request.password
+    try:
+        users_dir = "data/users/"
+        new_file_path = os.path.join(users_dir, f"{username}.json")
+        
+        # Verificar si el usuario ya existe
+        for filename in os.listdir(users_dir):
+            with open(os.path.join(users_dir, filename), "r") as file:
+                existing_user = json.load(file)
+                if existing_user["email"] == user_email:
+                    print(f"Email in use: {existing_user}")
+                    raise HTTPException(status_code=401, detail="Email in use")
+
+        new_data = {
+            "id": username,
+            "email": user_email,
+            "favorites": [],
+            "password": password
+        }
+
+        if not os.path.exists(new_file_path):
+            with open(new_file_path, "w") as file:
+                json.dump(new_data, file)
+            print(f"New user data created: {new_data}")
+            return {"message": "Register success"}
+        else:
+            print(f"User data already exists: {new_data}")
+            raise HTTPException(status_code=400, detail="Username exists")
+
+    except HTTPException as http_exception:
+        raise http_exception
+    except Exception as e:
+        raise HTTPException(status_code=500, detail="Error")
