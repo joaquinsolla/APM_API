@@ -1,1 +1,1 @@
-{"id": "testuser1", "name": "User 1", "favorites": [1, 2, 3, 4, 5], "password":  "testuser1"}
+{"id": "testuser1", "email": "testuser1@gmail.com", "favorites": [1, 2, 3, 4, 5], "password": "testuser1"}

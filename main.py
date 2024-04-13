@@ -45,14 +45,15 @@ def get_user_favorites(user_id: str):
 
 # CREATE NEW USER DATA FILE
 # RETURNS: NEW USER DATA IF OK
-@app.put("/put/new_user/{user_id}/{user_name}")
-def create_user_data(user_id: str, user_name: str):
+@app.put("/put/new_user/{user_id}/{user_email}/{password}")
+def create_user_data(user_id: str, user_email: str, password: str):
     try:
         new_file_path = os.path.join("data/users/", f"{user_id}.json")
         new_data = {
             "id": user_id,
-            "name": user_name,
-            "favorites": []
+            "email": user_email,
+            "favorites": [],
+            "password": password
         }
 
         if not os.path.exists(new_file_path):
@@ -84,7 +85,7 @@ def add_user_favorite(user_id: str, slot_id: int):
             return user_data
 
         else:
-            return {"id": "", "name": "", "favorites": []}
+            return {"id": "", "email": "", "favorites": [], "password": ""}
 
     except Exception:
         return {}
@@ -108,7 +109,7 @@ def remove_user_favorite(user_id: str, slot_id: int):
             return user_data
 
         else:
-            return {"id": "", "name": "", "favorites": []}
+            return {"id": "", "email": "", "favorites": [], "password": ""}
 
     except Exception:
         return {}
@@ -116,14 +117,14 @@ def remove_user_favorite(user_id: str, slot_id: int):
 
 # EDIT USER ACCOUNT INFO
 # RETURNS: NEW USER DATA
-@app.put("/put/user/{user_id}/edit_info/{new_name}")
-def edit_user_info(user_id: str, new_name: str):
+@app.put("/put/user/{user_id}/edit_info/{new_email}")
+def edit_user_info(user_id: str, new_email: str):
     try:
 
         with open(f"data/users/{user_id}.json", "r", encoding="utf-8") as file:
             user_data = json.load(file)
 
-        user_data["name"] = new_name
+        user_data["email"] = new_email
 
         with open(f"data/users/{user_id}.json", "w", encoding="utf-8") as file:
             json.dump(user_data, file)
@@ -135,20 +136,20 @@ def edit_user_info(user_id: str, new_name: str):
 
 
 class LoginRequest(BaseModel):
-    login: str
+    username: str
     password: str
 
 
 @app.post("/post/login")
 def login(login_request: LoginRequest):
-    login = login_request.login
+    username = login_request.username
     password = login_request.password
 
     print("LOGIN")
-    print(f"Recibido login: {login}, password: {password}")
+    print(f"Recibido username: {username}, password: {password}")
 
     try:
-        with open(f"data/users/{login}.json", "r", encoding="utf-8") as file:
+        with open(f"data/users/{username}.json", "r", encoding="utf-8") as file:
             user_data = json.load(file)
 
             # Verificar si la contraseña coincide

@@ -1,6 +1,6 @@
 {
   "id": "testuser3",
-  "name": "User 3",
+  "email": "testuser3@gmail.com",
   "favorites": [],
   "password": "testuser3"
 }
