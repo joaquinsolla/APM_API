@@ -123,6 +123,37 @@ def edit_user_info(user_id: str, new_email: str):
         return {}
 
 
+class PasswordChangeRequest(BaseModel):
+    username: str
+    email: str
+    password: str
+
+# CHANGE USER PASSWORD
+@app.put("/put/user/change_password")
+def change_password(request: PasswordChangeRequest):
+    try:
+        user_file_path = f"data/users/{request.username}.json"
+        if os.path.exists(user_file_path):
+            with open(user_file_path, "r", encoding="utf-8") as file:
+                user_data = json.load(file)
+            
+                if user_data["email"] == request.email:
+                    user_data["password"] = request.password
+                    with open(user_file_path, "w", encoding="utf-8") as file:
+                        json.dump(user_data, file)
+                    return {"message": "Password successfully changed"}
+                else:
+                    print("Aqui")
+                    raise HTTPException(status_code=400, detail="Email does not match")
+        else:
+            print("Aqui2")
+            raise HTTPException(status_code=401, detail="User not found")
+    except HTTPException as http_exception:
+        raise http_exception
+    except Exception as e:
+        raise HTTPException(status_code=404, detail=str(e))
+
+
 class LoginRequest(BaseModel):
     username: str
     password: str
