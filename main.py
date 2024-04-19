@@ -223,19 +223,14 @@ def register(register_request: RegisterRequest):
 # DELETE USER DATA FILE
 @app.delete("/delete/user/{username}")
 def delete_user(username: str):
-    print("Aqui")
     try:
         user_file_path = f"data/users/{username}.json"
         if os.path.exists(user_file_path):
-            print("Aqui2")
             os.remove(user_file_path)
             return {"message": "User successfully deleted"}
         else:
-            print("Aqui3")
             raise HTTPException(status_code=400, detail="User not found")
     except HTTPException as http_exception:
-        print("Aqui4")
         raise http_exception
     except Exception as e:
-        print("Aqui5")
         raise HTTPException(status_code=404, detail=str(e))
